@@ -5,109 +5,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메리 트리 키우기</title>
     <script src="https://cdn.tailwindcss.com"></script>
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap');
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap');
+        
+        body { 
+            background: #0f172a; 
+            font-family: 'Noto Sans KR', sans-serif; 
+            color: white; 
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
 
-    /* 1. 기본 배경 및 폰트 설정 */
-    body { 
-        background: #0f172a; 
-        font-family: 'Noto Sans KR', sans-serif; 
-        color: white; 
-        overflow-x: hidden; 
-        margin: 0;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            position: relative;
+            z-index: 10;
+        }
 
-    /* 2. 글래스모피즘 카드 디자인 */
-    .glass-card { 
-        background: rgba(255, 255, 255, 0.05); 
-        backdrop-filter: blur(15px); 
-        border: 1px solid rgba(255, 255, 255, 0.1); 
-        position: relative;
-        z-index: 5; /* 배경 눈보다는 위 */
-    }
+        /* UI 레이어: 트리보다 항상 위 */
+        .ui-top-layer {
+            position: relative;
+            z-index: 40;
+        }
 
-    /* 3. ★ 핵심: UI 레이어 (트리보다 무조건 위로) */
-    .ui-top-layer {
-        position: relative;
-        z-index: 30; /* 트리(20)보다 높은 우선순위 */
-    }
+        /* 트리 배치 영역: 위치를 아래로 내림 (mt-20) */
+        .tree-zone {
+            height: 340px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            margin-top: 40px; /* 위에서 아래로 밀어냄 */
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 20;
+            overflow: visible;
+        }
 
-    /* 4. 트리 배치 영역 (성장판 공간 확보) */
-    .tree-zone {
-        height: 300px; /* 트리가 커져도 버틸 수 있는 충분한 높이 */
-        display: flex;
-        align-items: flex-end; /* 트리를 바닥에 고정 */
-        justify-content: center;
-        margin: 10px 0 30px 0; /* 위아래 여백을 주어 글씨와 거리 유지 */
-        position: relative;
-        z-index: 20; /* UI 레이어보다는 아래 */
-        overflow: visible; /* 트리가 커져도 잘리지 않게 함 */
-    }
+        #tree-image { 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.3)); 
+            width: 160px;
+            max-height: 260px;
+            object-fit: contain;
+            transform-origin: bottom center;
+        }
 
-    /* 5. 트리 이미지 스타일 */
-    #tree-image { 
-        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-        filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)); 
-        width: 150px; /* 적당한 초기 크기 */
-        max-height: 250px;
-        object-fit: contain;
-        transform-origin: bottom center; /* 바닥을 기준으로 커짐 */
-    }
-
-    /* 6. 배경 눈 내리는 효과 */
-    .snow { 
-        position: absolute; 
-        background: white; 
-        border-radius: 50%; 
-        pointer-events: none; 
-        z-index: 1; /* 가장 뒤에 배치 */
-    }
-    @keyframes fall { to { transform: translateY(100vh); } }
-
-    /* 7. 유틸리티 클래스 */
-    .hidden { display: none !important; }
-    
-    /* 버튼 클릭 시 눌림 효과 */
-    .active-scale:active {
-        transform: scale(0.95);
-    }
-</style>
+        .snow { position: absolute; background: white; border-radius: 50%; pointer-events: none; z-index: 1; }
+        @keyframes fall { to { transform: translateY(100vh); } }
+        .hidden { display: none !important; }
+    </style>
 </head>
-<body class="min-h-screen flex items-center justify-center relative">
+<body class="relative">
     <div id="snow-field" class="absolute inset-0 pointer-events-none"></div>
 
-    <main class="glass-card p-8 rounded-[2.5rem] w-full max-w-md text-center z-10 mx-4">
-        <header class="mb-6">
-            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-emerald-500">
-                🎄 메리 트리 키우기
-            </h1>
-            <p id="sub-title" class="text-white/50 text-xs mt-2 italic">정성을 다해 트리를 키워보세요</p>
+    <main class="glass-card p-10 rounded-[3rem] w-full max-w-md text-center mx-4">
+        <header class="ui-top-layer mb-4">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight">🎄 메리 트리 키우기</h1>
+            <p id="sub-title" class="text-white/40 text-xs mt-2 italic">로그인 후 기여할 수 있습니다</p>
         </header>
 
-        <section id="login-section" class="py-10">
-            <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-xl active:scale-95 transition-all">
+        <section id="login-section" class="py-10 ui-top-layer">
+            <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-2xl active:scale-95 transition-all">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6 mr-4" alt="Google">
-                Google로 시작하기
+                Google 로그인 후 기여하기
             </button>
         </section>
 
         <section id="game-section" class="hidden">
-            <div id="boost-badge" class="hidden mb-4 inline-block bg-orange-600 text-white text-[10px] font-bold px-3 py-1 rounded-full animate-pulse shadow-lg uppercase">
-                부스트 가동 중 (2X)
+            <div id="boost-badge" class="ui-top-layer hidden mb-2 inline-block bg-orange-600 text-white text-[10px] font-bold px-3 py-1 rounded-full animate-pulse shadow-lg uppercase">
+                부스트 적용 중
             </div>
 
-            <div class="relative h-72 flex items-center justify-center mb-8 overflow-visible">
-                <img id="tree-image" src="https://img.bloupla.net/rxNz2hSf?raw=1" alt="Tree" class="origin-bottom">
+            <div class="tree-zone">
+                <img id="tree-image" src="https://img.bloupla.net/rxNz2hSf?raw=1" alt="Tree">
             </div>
 
-            <div class="space-y-6">
+            <div class="space-y-6 ui-top-layer">
                 <div>
                     <div class="flex justify-between text-[11px] mb-2 px-1">
-                        <span id="level-display" class="bg-white/10 px-2 py-1 rounded">단계 1</span>
+                        <span id="level-display" class="bg-white/10 px-2 py-1 rounded font-bold">단계 1</span>
                         <span id="exp-display" class="bg-white/10 px-2 py-1 rounded">0 / 10 XP</span>
                     </div>
                     <div class="h-2 bg-black/40 rounded-full overflow-hidden">
@@ -115,31 +97,27 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 gap-3">
-                    <button id="daily-btn" class="w-full bg-yellow-500 text-yellow-900 font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-all">
+                <div id="owner-controls" class="space-y-3">
+                    <button id="daily-btn" class="w-full bg-yellow-500 text-yellow-900 font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all">
                         오늘의 사랑 주기 (+20 XP)
                     </button>
-                    <button id="grow-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all select-none">
-                        꾹 눌러서 가속하기
+                    <button id="share-btn" class="text-white/40 text-xs hover:text-white transition underline decoration-white/20 w-full text-center">내 트리 링크 복사</button>
+                </div>
+
+                <div id="friend-controls" class="hidden space-y-3 pt-4 border-t border-white/10">
+                    <p class="text-xs text-white/60 mb-2 font-bold"><span id="friend-name" class="text-yellow-400">친구</span>님에게 기여하기</p>
+                    <input type="text" id="cheer-message" placeholder="응원 한마디" 
+                           class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center text-sm">
+                    <button id="cheer-btn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all">
+                        오늘의 응원 보내기
                     </button>
                 </div>
-                
-                <button id="share-btn" class="text-white/40 text-xs hover:text-white transition underline decoration-white/20">내 트리 링크 복사</button>
             </div>
-        </section>
-
-        <section id="friend-visit-section" class="hidden mt-8 pt-6 border-t border-white/10">
-            <input type="text" id="cheer-message" placeholder="응원 메시지 한마디" 
-                   class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center mb-3 text-sm">
-            <button id="cheer-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-all">
-                메시지 보내고 부스트 주기
-            </button>
         </section>
     </main>
 
     <script src="main.js"></script>
     <script>
-        // 배경 눈 내리는 효과
         const f = document.getElementById('snow-field');
         setInterval(() => {
             const s = document.createElement('div');
@@ -149,11 +127,11 @@
             s.style.left = Math.random() * 100 + 'vw';
             s.style.top = '-10px';
             s.style.opacity = Math.random();
-            const d = Math.random() * 5 + 5 + 's';
+            const d = Math.random() * 5 + 10 + 's';
             s.style.animation = `fall ${d} linear forwards`;
             f.appendChild(s);
             setTimeout(() => s.remove(), parseFloat(d) * 1000);
-        }, 200);
+        }, 300);
     </script>
 </body>
 </html>
