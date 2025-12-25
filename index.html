@@ -3,32 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>크리스마스 트리 성장 프로젝트</title>
+    <title>메리 트리 키우기</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap');
-
+        
         body {
             background: radial-gradient(circle at center, #1a2a6c, #b21f1f, #fdbb2d);
             background-attachment: fixed;
             font-family: 'Noto Sans KR', sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
         }
 
         .glass-card {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
 
-        /* 트리 이미지가 커질 때 부드럽게 애니메이션 */
+        /* 트리 이미지 효과 */
         #tree-image {
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5));
+            /* 초기 너비 설정 */
+            width: 180px; 
+            height: auto;
         }
 
-        /* 눈 내리는 애니메이션 */
+        /* 눈 내리는 효과 전용 */
         .snow {
             position: absolute;
             background: white;
@@ -38,76 +46,80 @@
         }
 
         @keyframes fall {
-            to { transform: translateY(100vh); }
+            to { transform: translateY(110vh); }
         }
 
-        /* 버튼 클릭 시 눌림 효과 */
-        .btn-active:active {
-            transform: scale(0.95);
-        }
-
-        .hidden { display: none; }
+        .hidden { display: none !important; }
+        
+        /* 버튼 조작감 */
+        .btn-press:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center relative">
+<body class="relative">
 
-    <div id="snow-field" class="absolute inset-0 overflow-hidden"></div>
+    <div id="snow-field" class="absolute inset-0 z-0"></div>
 
-    <main class="glass-card p-10 rounded-[2.5rem] w-full max-w-md text-center z-10 mx-4">
-        <header class="mb-10">
-            <h1 class="text-3xl font-bold text-white tracking-tight">
+    <main class="glass-card p-10 rounded-[3rem] w-full max-w-md text-center z-10 mx-4">
+        <header class="mb-8">
+            <h1 class="text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
                 🎄 메리 트리 키우기
             </h1>
-            <p id="sub-title" class="text-white/60 text-sm mt-2 font-light">나만의 특별한 크리스마스 트리를 키워보세요</p>
+            <p id="sub-title" class="text-white/70 text-sm mt-2 font-light italic">
+                따뜻한 마음으로 트리를 키워보세요
+            </p>
         </header>
 
-        <section id="login-section" class="py-10">
-            <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-xl btn-active transition-all">
+        <section id="login-section" class="py-6">
+            <div class="mb-8 text-white/80 text-sm">로그인하면 나만의 트리가 생성됩니다</div>
+            <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-2xl btn-press transition-all">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6 mr-4" alt="Google">
-                Google 계정으로 로그인하기
+                Google로 시작하기
             </button>
         </section>
 
         <section id="game-section" class="hidden">
-            <div id="boost-badge" class="hidden mb-4 inline-block bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-4 py-1 rounded-full animate-pulse shadow-lg">
-                부스트 모드 가동 중
+            <div id="boost-badge" class="hidden mb-6 inline-block bg-gradient-to-r from-yellow-400 to-red-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full animate-pulse shadow-lg uppercase tracking-widest">
+                부스트 작동중
             </div>
 
-            <div class="relative h-80 flex items-center justify-center mb-10 overflow-visible">
+            <div class="relative h-72 flex items-center justify-center mb-10">
                 <div id="tree-wrapper" class="relative select-none">
-                    <img id="tree-image" src="/images/tree_main.png" alt="트리" class="w-40 h-auto origin-bottom">
+                    <img id="tree-image" 
+                         src="https://img.freepik.com/free-png/decorated-christmas-tree-transparent-background_1308-161613.png" 
+                         alt="Christmas Tree" 
+                         class="origin-bottom">
                 </div>
             </div>
 
-            <div class="space-y-8">
-                <div>
-                    <div class="flex justify-between text-xs text-white/80 mb-3 px-1 font-medium">
-                        <span id="level-display" class="bg-green-600/50 px-3 py-1 rounded-md">단계 1</span>
-                        <span id="exp-display" class="bg-blue-600/50 px-3 py-1 rounded-md">0 / 10 XP</span>
+            <div class="space-y-6">
+                <div class="px-2">
+                    <div class="flex justify-between text-[11px] font-bold text-white mb-2">
+                        <span id="level-display" class="bg-white/20 px-3 py-1 rounded-full">LEVEL 1</span>
+                        <span id="exp-display" class="bg-white/20 px-3 py-1 rounded-full">0 / 10 XP</span>
                     </div>
-                    <div class="h-3 bg-black/30 rounded-full border border-white/10 p-0.5">
-                        <div id="progress-bar" class="h-full bg-gradient-to-r from-green-400 to-emerald-600 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    <div class="h-2.5 bg-black/40 rounded-full overflow-hidden border border-white/5">
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-green-400 to-emerald-600 shadow-[0_0_10px_#4ade80] transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <div class="space-y-3">
-                    <button id="grow-btn" class="w-full bg-red-600 hover:bg-red-700 text-white text-xl font-bold py-5 rounded-3xl shadow-2xl btn-active transition-transform select-none">
-                        사랑 주기
+                <div class="pt-4 space-y-4">
+                    <button id="grow-btn" class="w-full bg-gradient-to-b from-red-500 to-red-700 text-white text-xl font-black py-5 rounded-2xl shadow-[0_10px_20px_rgba(239,68,68,0.4)] btn-press select-none outline-none">
+                        꾹 눌러서 키우기
                     </button>
-                    <button id="share-btn" class="text-white/60 text-sm hover:text-white transition flex items-center justify-center w-full underline decoration-white/20">
-                        내 트리 링크 공유하기
+                    <button id="share-btn" class="text-white/50 text-xs hover:text-white transition-colors underline decoration-white/10">
+                        공유 링크 복사하기
                     </button>
                 </div>
             </div>
         </section>
 
-        <section id="friend-visit-section" class="hidden mt-10 pt-6 border-t border-white/10">
-            <p class="text-white/90 mb-4"><span id="friend-name" class="font-bold">친구</span>님의 트리입니다.</p>
+        <section id="friend-visit-section" class="hidden mt-8 pt-6 border-t border-white/10">
+            <p class="text-white/80 text-sm mb-4"><span id="friend-name" class="font-bold text-yellow-300">친구</span>님의 트리입니다</p>
             <div class="space-y-3">
-                <input type="text" id="cheer-message" placeholder="응원 메시지를 남겨주세요" 
-                       class="w-full bg-black/20 text-white placeholder-white/40 border border-white/20 px-4 py-3 rounded-xl focus:outline-none focus:border-yellow-400 text-center">
-                <button id="cheer-btn" class="w-full bg-yellow-400 hover:bg-yellow-500 text-yellow-900 font-bold py-4 rounded-xl shadow-lg btn-active transition-all">
-                    선물 메시지 보내기
+                <input type="text" id="cheer-message" placeholder="응원 한마디" 
+                       class="w-full bg-white/10 text-white border border-white/20 px-4 py-3 rounded-xl focus:outline-none focus:border-yellow-400 text-sm text-center">
+                <button id="cheer-btn" class="w-full bg-yellow-400 text-yellow-900 font-bold py-4 rounded-xl shadow-lg btn-press">
+                    메시지 보내고 부스트 주기
                 </button>
             </div>
         </section>
@@ -116,22 +128,22 @@
     <script src="main.js"></script>
 
     <script>
-        const field = document.getElementById('snow-field');
-        function createSnow() {
-            const snow = document.createElement('div');
-            snow.className = 'snow';
+        const snowField = document.getElementById('snow-field');
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snow';
             const size = Math.random() * 4 + 2 + 'px';
-            snow.style.width = size;
-            snow.style.height = size;
-            snow.style.left = Math.random() * 100 + 'vw';
-            snow.style.top = '-10px';
-            snow.style.opacity = Math.random();
-            const duration = Math.random() * 5 + 5 + 's';
-            snow.style.animation = `fall ${duration} linear forwards`;
-            field.appendChild(snow);
-            setTimeout(() => snow.remove(), parseFloat(duration) * 1000);
+            snowflake.style.width = size;
+            snowflake.style.height = size;
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.opacity = Math.random();
+            const fallDuration = Math.random() * 5 + 5 + 's';
+            snowflake.style.animation = `fall ${fallDuration} linear forwards`;
+            
+            snowField.appendChild(snowflake);
+            setTimeout(() => snowflake.remove(), parseFloat(fallDuration) * 1000);
         }
-        setInterval(createSnow, 200);
+        setInterval(createSnowflake, 150);
     </script>
 </body>
 </html>
