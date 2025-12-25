@@ -1,0 +1,7 @@
+name = "christmas-tree"
+pages_build_output_dir = "." # public 폴더가 없으므로 루트 사용
+
+[[d1_databases]]
+binding = "D1" # 코드에서 env.D1으로 접근할 이름
+database_name = "junulee-gift-tree"
+database_id = "eba9a50c-171f-46f8-a32f-0eef2adffbc6"
