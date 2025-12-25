@@ -7,143 +7,89 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap');
-        
-        body {
-            background: radial-gradient(circle at center, #1a2a6c, #b21f1f, #fdbb2d);
-            background-attachment: fixed;
-            font-family: 'Noto Sans KR', sans-serif;
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
-
-        .glass-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        /* 트리 이미지 효과 */
-        #tree-image {
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.5));
-            /* 초기 너비 설정 */
-            width: 180px; 
-            height: auto;
-        }
-
-        /* 눈 내리는 효과 전용 */
-        .snow {
-            position: absolute;
-            background: white;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        @keyframes fall {
-            to { transform: translateY(110vh); }
-        }
-
+        body { background: #0f172a; font-family: 'Noto Sans KR', sans-serif; color: white; overflow-x: hidden; }
+        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        #tree-image { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)); width: 200px; }
+        .snow { position: absolute; background: white; border-radius: 50%; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(100vh); } }
         .hidden { display: none !important; }
-        
-        /* 버튼 조작감 */
-        .btn-press:active { transform: scale(0.95); }
     </style>
 </head>
-<body class="relative">
+<body class="min-h-screen flex items-center justify-center relative">
+    <div id="snow-field" class="absolute inset-0 pointer-events-none"></div>
 
-    <div id="snow-field" class="absolute inset-0 z-0"></div>
-
-    <main class="glass-card p-10 rounded-[3rem] w-full max-w-md text-center z-10 mx-4">
-        <header class="mb-8">
-            <h1 class="text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
-                🎄 메리 트리 키우기
-            </h1>
-            <p id="sub-title" class="text-white/70 text-sm mt-2 font-light italic">
-                따뜻한 마음으로 트리를 키워보세요
-            </p>
+    <main class="glass-card p-8 rounded-[2.5rem] w-full max-w-md text-center z-10 mx-4">
+        <header class="mb-6">
+            <h1 class="text-3xl font-bold">🎄 메리 트리 키우기</h1>
+            <p id="sub-title" class="text-white/50 text-xs mt-2 italic">정성을 다해 트리를 키워보세요</p>
         </header>
 
-        <section id="login-section" class="py-6">
-            <div class="mb-8 text-white/80 text-sm">로그인하면 나만의 트리가 생성됩니다</div>
-            <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-2xl btn-press transition-all">
+        <section id="login-section" class="py-10">
+            <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-xl active:scale-95 transition-all">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6 mr-4" alt="Google">
                 Google로 시작하기
             </button>
         </section>
 
         <section id="game-section" class="hidden">
-            <div id="boost-badge" class="hidden mb-6 inline-block bg-gradient-to-r from-yellow-400 to-red-500 text-white text-[10px] font-black px-4 py-1.5 rounded-full animate-pulse shadow-lg uppercase tracking-widest">
-                부스트 작동중
+            <div id="boost-badge" class="hidden mb-4 inline-block bg-orange-600 text-white text-[10px] font-bold px-3 py-1 rounded-full animate-pulse shadow-lg uppercase">
+                부스트 가동 중 (2X)
             </div>
 
-            <div class="relative h-72 flex items-center justify-center mb-10">
-                <div id="tree-wrapper" class="relative select-none">
-                    <img id="tree-image" 
-                         src="https://img.bloupla.net/HQgoHrCy?raw=1" 
-                         alt="Christmas Tree" 
-                         class="origin-bottom">
-                </div>
+            <div class="relative h-72 flex items-center justify-center mb-8">
+                <img id="tree-image" src="https://img.bloupla.net/rxNz2hSf?raw=1" alt="Tree" class="origin-bottom">
             </div>
 
             <div class="space-y-6">
-                <div class="px-2">
-                    <div class="flex justify-between text-[11px] font-bold text-white mb-2">
-                        <span id="level-display" class="bg-white/20 px-3 py-1 rounded-full">LEVEL 1</span>
-                        <span id="exp-display" class="bg-white/20 px-3 py-1 rounded-full">0 / 10 XP</span>
+                <div>
+                    <div class="flex justify-between text-[11px] mb-2 px-1">
+                        <span id="level-display" class="bg-white/10 px-2 py-1 rounded">단계 1</span>
+                        <span id="exp-display" class="bg-white/10 px-2 py-1 rounded">0 / 10 XP</span>
                     </div>
-                    <div class="h-2.5 bg-black/40 rounded-full overflow-hidden border border-white/5">
-                        <div id="progress-bar" class="h-full bg-gradient-to-r from-green-400 to-emerald-600 shadow-[0_0_10px_#4ade80] transition-all duration-300" style="width: 0%"></div>
+                    <div class="h-2 bg-black/40 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-green-500 transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
-                <div class="pt-4 space-y-4">
-                    <button id="grow-btn" class="w-full bg-gradient-to-b from-red-500 to-red-700 text-white text-xl font-black py-5 rounded-2xl shadow-[0_10px_20px_rgba(239,68,68,0.4)] btn-press select-none outline-none">
-                        꾹 눌러서 키우기
+                <div class="grid grid-cols-1 gap-3">
+                    <button id="daily-btn" class="w-full bg-yellow-500 text-yellow-900 font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-all">
+                        오늘의 사랑 주기 (+20 XP)
                     </button>
-                    <button id="share-btn" class="text-white/50 text-xs hover:text-white transition-colors underline decoration-white/10">
-                        공유 링크 복사하기
+                    <button id="grow-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all select-none">
+                        꾹 눌러서 가속하기
                     </button>
                 </div>
+                
+                <button id="share-btn" class="text-white/40 text-xs hover:text-white transition underline">내 트리 링크 복사</button>
             </div>
         </section>
 
         <section id="friend-visit-section" class="hidden mt-8 pt-6 border-t border-white/10">
-            <p class="text-white/80 text-sm mb-4"><span id="friend-name" class="font-bold text-yellow-300">친구</span>님의 트리입니다</p>
-            <div class="space-y-3">
-                <input type="text" id="cheer-message" placeholder="응원 한마디" 
-                       class="w-full bg-white/10 text-white border border-white/20 px-4 py-3 rounded-xl focus:outline-none focus:border-yellow-400 text-sm text-center">
-                <button id="cheer-btn" class="w-full bg-yellow-400 text-yellow-900 font-bold py-4 rounded-xl shadow-lg btn-press">
-                    메시지 보내고 부스트 주기
-                </button>
-            </div>
+            <input type="text" id="cheer-message" placeholder="응원 메시지 한마디" 
+                   class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center mb-3">
+            <button id="cheer-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-all">
+                메시지 보내고 부스트 주기
+            </button>
         </section>
     </main>
 
     <script src="main.js"></script>
-
     <script>
-        const snowField = document.getElementById('snow-field');
-        function createSnowflake() {
-            const snowflake = document.createElement('div');
-            snowflake.className = 'snow';
-            const size = Math.random() * 4 + 2 + 'px';
-            snowflake.style.width = size;
-            snowflake.style.height = size;
-            snowflake.style.left = Math.random() * 100 + 'vw';
-            snowflake.style.opacity = Math.random();
-            const fallDuration = Math.random() * 5 + 5 + 's';
-            snowflake.style.animation = `fall ${fallDuration} linear forwards`;
-            
-            snowField.appendChild(snowflake);
-            setTimeout(() => snowflake.remove(), parseFloat(fallDuration) * 1000);
-        }
-        setInterval(createSnowflake, 150);
+        // 배경 눈 내리는 효과
+        const f = document.getElementById('snow-field');
+        setInterval(() => {
+            const s = document.createElement('div');
+            s.className = 'snow';
+            const size = Math.random() * 3 + 2 + 'px';
+            s.style.width = size; s.style.height = size;
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.top = '-10px';
+            s.style.opacity = Math.random();
+            const d = Math.random() * 5 + 5 + 's';
+            s.style.animation = `fall ${d} linear forwards`;
+            f.appendChild(s);
+            setTimeout(() => s.remove(), parseFloat(d) * 1000);
+        }, 200);
     </script>
 </body>
 </html>
