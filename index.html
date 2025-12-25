@@ -34,24 +34,24 @@
             z-index: 40;
         }
 
-        /* 트리 배치 영역: 위치를 아래로 내림 (mt-20) */
+        /* 트리 배치 영역: 위치를 아래로 넉넉히 내림 */
         .tree-zone {
-            height: 340px;
+            height: 380px; 
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            margin-top: 40px; /* 위에서 아래로 밀어냄 */
-            margin-bottom: 20px;
+            margin-top: 80px; /* 제목으로부터 거리를 둠 */
+            margin-bottom: 30px;
             position: relative;
             z-index: 20;
             overflow: visible;
         }
 
         #tree-image { 
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
             filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.3)); 
-            width: 160px;
-            max-height: 260px;
+            width: 150px;
+            max-height: 250px;
             object-fit: contain;
             transform-origin: bottom center;
         }
@@ -65,15 +65,15 @@
     <div id="snow-field" class="absolute inset-0 pointer-events-none"></div>
 
     <main class="glass-card p-10 rounded-[3rem] w-full max-w-md text-center mx-4">
-        <header class="ui-top-layer mb-4">
+        <header class="ui-top-layer mb-2">
             <h1 class="text-3xl font-extrabold text-white tracking-tight">🎄 메리 트리 키우기</h1>
-            <p id="sub-title" class="text-white/40 text-xs mt-2 italic">로그인 후 기여할 수 있습니다</p>
+            <p id="sub-title" class="text-white/40 text-[11px] mt-2 italic">정성을 다해 트리를 키워보세요</p>
         </header>
 
         <section id="login-section" class="py-10 ui-top-layer">
             <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-2xl active:scale-95 transition-all">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6 mr-4" alt="Google">
-                Google 로그인 후 기여하기
+                Google 로그인 후 시작
             </button>
         </section>
 
@@ -89,7 +89,7 @@
             <div class="space-y-6 ui-top-layer">
                 <div>
                     <div class="flex justify-between text-[11px] mb-2 px-1">
-                        <span id="level-display" class="bg-white/10 px-2 py-1 rounded font-bold">단계 1</span>
+                        <span id="level-display" class="bg-white/10 px-2 py-1 rounded font-bold text-green-300">단계 1</span>
                         <span id="exp-display" class="bg-white/10 px-2 py-1 rounded">0 / 10 XP</span>
                     </div>
                     <div class="h-2 bg-black/40 rounded-full overflow-hidden">
@@ -97,15 +97,20 @@
                     </div>
                 </div>
 
-                <div id="owner-controls" class="space-y-3">
+                <div class="space-y-3">
+                    <button id="admin-grow-btn" class="hidden w-full bg-gradient-to-r from-red-500 to-red-700 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-all select-none">
+                        꾹 눌러서 가속
+                    </button>
+
                     <button id="daily-btn" class="w-full bg-yellow-500 text-yellow-900 font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all">
                         오늘의 사랑 주기 (+20 XP)
                     </button>
-                    <button id="share-btn" class="text-white/40 text-xs hover:text-white transition underline decoration-white/20 w-full text-center">내 트리 링크 복사</button>
+                    
+                    <button id="share-btn" class="text-white/40 text-[11px] hover:text-white transition underline w-full text-center">내 트리 링크 복사</button>
                 </div>
 
                 <div id="friend-controls" class="hidden space-y-3 pt-4 border-t border-white/10">
-                    <p class="text-xs text-white/60 mb-2 font-bold"><span id="friend-name" class="text-yellow-400">친구</span>님에게 기여하기</p>
+                    <p class="text-[11px] text-white/60 mb-2 font-bold"><span id="friend-name" class="text-yellow-400">친구</span>님에게 기여하기</p>
                     <input type="text" id="cheer-message" placeholder="응원 한마디" 
                            class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center text-sm">
                     <button id="cheer-btn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all">
