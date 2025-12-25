@@ -1,38 +1,38 @@
+// functions/api/sync.js
 export async function onRequestPost(context) {
     const { env, request } = context;
     
     try {
-        // 클라이언트로부터 데이터 받기
-        const { uid, totalExp } = await request.json();
+        const { uid, gainedExp } = await request.json();
+        
+        // 1. 로그인 여부 확인
+        if (!uid) return new Response(JSON.stringify({ error: "로그인이 필요합니다." }), { status: 401 });
 
-        if (!uid || totalExp === undefined) {
-            return new Response(JSON.stringify({ error: "잘못된 요청입니다." }), { status: 400 });
+        // 2. 오늘 날짜 구하기 (KST 기준 YYYY-MM-DD)
+        const today = new Date().toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' });
+
+        // 3. 유저 데이터 조회
+        const user = await env.D1.prepare("SELECT last_contribution_date, total_exp FROM users WHERE uid = ?")
+            .bind(uid).first();
+
+        // 4. 하루 한 번 제한 확인
+        if (user && user.last_contribution_date === today) {
+            return new Response(JSON.stringify({ 
+                success: false, 
+                message: "오늘은 이미 기여하셨습니다. 내일 다시 와주세요!" 
+            }), { status: 403 });
         }
 
-        // [보안 Tip] 실제 운영 환경에서는 세션 쿠키를 확인하여 
-        // 요청한 uid가 현재 로그인한 사람과 일치하는지 검증해야 합니다.
-
-        // DB 업데이트: 누적 경험치와 마지막 동기화 시간 기록
-        const result = await env.D1.prepare(`
+        // 5. 경험치 업데이트 및 날짜 저장
+        await env.D1.prepare(`
             UPDATE users 
-            SET total_exp = ?, last_sync_time = ? 
+            SET total_exp = total_exp + ?, last_contribution_date = ? 
             WHERE uid = ?
-        `)
-        .bind(totalExp, Date.now(), uid)
-        .run();
+        `).bind(gainedExp, today, uid).run();
 
-        if (result.success) {
-            return new Response(JSON.stringify({ success: true }), {
-                headers: { "Content-Type": "application/json" }
-            });
-        } else {
-            throw new Error("DB 업데이트 실패");
-        }
+        return new Response(JSON.stringify({ success: true, message: "트리가 성장했습니다!" }));
 
-    } catch (error) {
-        return new Response(JSON.stringify({ error: error.message }), { 
-            status: 500,
-            headers: { "Content-Type": "application/json" }
-        });
+    } catch (e) {
+        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
     }
 }
