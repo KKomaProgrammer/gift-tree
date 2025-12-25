@@ -1,38 +1,72 @@
 // functions/api/sync.js
+
 export async function onRequestPost(context) {
     const { env, request } = context;
-    
+
     try {
-        const { uid, gainedExp } = await request.json();
+        // 1. 데이터 파싱
+        const { uid, contributor, gainedExp, message } = await request.json();
         
-        // 1. 로그인 여부 확인
-        if (!uid) return new Response(JSON.stringify({ error: "로그인이 필요합니다." }), { status: 401 });
+        // [보안] 필수 데이터 체크
+        if (!uid || !contributor) {
+            return new Response(JSON.stringify({ success: false, message: "인증 정보가 부족합니다." }), { status: 400 });
+        }
 
-        // 2. 오늘 날짜 구하기 (KST 기준 YYYY-MM-DD)
-        const today = new Date().toLocaleDateString('ko-KR', { timeZone: 'Asia/Seoul' });
+        // 2. IP 및 날짜 정보 가져오기 (KST 기준)
+        const clientIP = request.headers.get("CF-Connecting-IP") || "unknown";
+        const now = new Date();
+        const kstTime = new Date(now.getTime() + (9 * 60 * 60 * 1000)); // UTC -> KST
+        const today = kstTime.toISOString().split('T')[0]; // YYYY-MM-DD 형식
 
-        // 3. 유저 데이터 조회
-        const user = await env.D1.prepare("SELECT last_contribution_date, total_exp FROM users WHERE uid = ?")
-            .bind(uid).first();
+        // 3. 기여자(contributor)의 오늘 활동 기록 확인
+        // DB에서 해당 유저의 마지막 기여 날짜를 가져옴
+        const contributorInfo = await env.D1.prepare(
+            "SELECT last_contribution_date FROM users WHERE uid = ?"
+        ).bind(contributor).first();
 
-        // 4. 하루 한 번 제한 확인
-        if (user && user.last_contribution_date === today) {
+        // [보안] 하루 1회 제한 로직
+        if (contributorInfo && contributorInfo.last_contribution_date === today) {
             return new Response(JSON.stringify({ 
                 success: false, 
-                message: "오늘은 이미 기여하셨습니다. 내일 다시 와주세요!" 
+                message: "오늘의 정성은 이미 전달되었습니다. 내일 다시 참여해 주세요!" 
             }), { status: 403 });
         }
 
-        // 5. 경험치 업데이트 및 날짜 저장
-        await env.D1.prepare(`
-            UPDATE users 
-            SET total_exp = total_exp + ?, last_contribution_date = ? 
-            WHERE uid = ?
-        `).bind(gainedExp, today, uid).run();
+        // 4. 데이터베이스 업데이트 (트랜잭션/일괄 처리 권장)
+        // A. 트리의 주인(uid) 경험치 올리기
+        // B. 기여자(contributor)의 오늘 날짜 업데이트
+        // C. (선택) 응원 메시지가 있다면 저장
+        
+        const statements = [
+            // 트리의 주인 경험치 증가
+            env.D1.prepare("UPDATE users SET total_exp = total_exp + ? WHERE uid = ?").bind(gainedExp, uid),
+            
+            // 기여자의 날짜 업데이트 (IP 정보를 기록하고 싶다면 테이블에 컬럼 추가 필요, 여기서는 날짜만 우선 업데이트)
+            env.D1.prepare("UPDATE users SET last_contribution_date = ? WHERE uid = ?").bind(today, contributor)
+        ];
 
-        return new Response(JSON.stringify({ success: true, message: "트리가 성장했습니다!" }));
+        // 메시지가 있는 경우 (친구 응원 시)
+        if (message) {
+            statements.push(
+                env.D1.prepare("INSERT INTO messages (receiver_id, sender_name, content, created_at) VALUES (?, ?, ?, ?)")
+                .bind(uid, "친구", message, Date.now())
+            );
+        }
 
-    } catch (e) {
-        return new Response(JSON.stringify({ error: e.message }), { status: 500 });
+        // 모든 쿼리 실행
+        await env.D1.batch(statements);
+
+        return new Response(JSON.stringify({ 
+            success: true, 
+            message: "성공적으로 정성이 전달되었습니다!" 
+        }), {
+            headers: { "Content-Type": "application/json" }
+        });
+
+    } catch (error) {
+        return new Response(JSON.stringify({ 
+            success: false, 
+            message: "서버 오류: " + error.message 
+        }), { status: 500 });
     }
 }
