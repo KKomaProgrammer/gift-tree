@@ -1,0 +1,12 @@
+name = "junulee-gift-tree"
+pages_build_output_dir = "."
+
+# [vars] 섹션을 만들어 일반 변수를 넣습니다.
+[vars]
+GOOGLE_CLIENT_ID = "642839804584-tpbqkk3fveql7d6e1v4vqi628ocn2u2t.apps.googleusercontent.com"
+GOOGLE_REDIRECT_URI = "https://junulee-gift-tree.pages.dev/api/auth/callback"
+
+[[d1_databases]]
+binding = "D1"
+database_name = "junulee-gift-tree"
+database_id = "eba9a50c-171f-46f8-a32f-0eef2adffbc6"
