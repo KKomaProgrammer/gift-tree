@@ -9,7 +9,17 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap');
         body { background: #0f172a; font-family: 'Noto Sans KR', sans-serif; color: white; overflow-x: hidden; }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        #tree-image { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)); width: 200px; }
+        
+        /* 트리 이미지 크기 최적화 */
+        #tree-image { 
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)); 
+            /* 적당한 초기 크기 설정 */
+            width: 160px; 
+            max-height: 240px;
+            object-fit: contain;
+        }
+        
         .snow { position: absolute; background: white; border-radius: 50%; pointer-events: none; }
         @keyframes fall { to { transform: translateY(100vh); } }
         .hidden { display: none !important; }
@@ -20,7 +30,9 @@
 
     <main class="glass-card p-8 rounded-[2.5rem] w-full max-w-md text-center z-10 mx-4">
         <header class="mb-6">
-            <h1 class="text-3xl font-bold">🎄 메리 트리 키우기</h1>
+            <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-300 to-emerald-500">
+                🎄 메리 트리 키우기
+            </h1>
             <p id="sub-title" class="text-white/50 text-xs mt-2 italic">정성을 다해 트리를 키워보세요</p>
         </header>
 
@@ -36,7 +48,7 @@
                 부스트 가동 중 (2X)
             </div>
 
-            <div class="relative h-72 flex items-center justify-center mb-8">
+            <div class="relative h-72 flex items-center justify-center mb-8 overflow-visible">
                 <img id="tree-image" src="https://img.bloupla.net/rxNz2hSf?raw=1" alt="Tree" class="origin-bottom">
             </div>
 
@@ -47,7 +59,7 @@
                         <span id="exp-display" class="bg-white/10 px-2 py-1 rounded">0 / 10 XP</span>
                     </div>
                     <div class="h-2 bg-black/40 rounded-full overflow-hidden">
-                        <div id="progress-bar" class="h-full bg-green-500 transition-all duration-300" style="width: 0%"></div>
+                        <div id="progress-bar" class="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
 
@@ -60,13 +72,13 @@
                     </button>
                 </div>
                 
-                <button id="share-btn" class="text-white/40 text-xs hover:text-white transition underline">내 트리 링크 복사</button>
+                <button id="share-btn" class="text-white/40 text-xs hover:text-white transition underline decoration-white/20">내 트리 링크 복사</button>
             </div>
         </section>
 
         <section id="friend-visit-section" class="hidden mt-8 pt-6 border-t border-white/10">
             <input type="text" id="cheer-message" placeholder="응원 메시지 한마디" 
-                   class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center mb-3">
+                   class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center mb-3 text-sm">
             <button id="cheer-btn" class="w-full bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-all">
                 메시지 보내고 부스트 주기
             </button>
