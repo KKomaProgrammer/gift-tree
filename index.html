@@ -5,25 +5,77 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메리 트리 키우기</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap');
-        body { background: #0f172a; font-family: 'Noto Sans KR', sans-serif; color: white; overflow-x: hidden; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        
-        /* 트리 이미지 크기 최적화 */
-        #tree-image { 
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)); 
-            /* 적당한 초기 크기 설정 */
-            width: 160px; 
-            max-height: 240px;
-            object-fit: contain;
-        }
-        
-        .snow { position: absolute; background: white; border-radius: 50%; pointer-events: none; }
-        @keyframes fall { to { transform: translateY(100vh); } }
-        .hidden { display: none !important; }
-    </style>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;500;700&display=swap');
+
+    /* 1. 기본 배경 및 폰트 설정 */
+    body { 
+        background: #0f172a; 
+        font-family: 'Noto Sans KR', sans-serif; 
+        color: white; 
+        overflow-x: hidden; 
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* 2. 글래스모피즘 카드 디자인 */
+    .glass-card { 
+        background: rgba(255, 255, 255, 0.05); 
+        backdrop-filter: blur(15px); 
+        border: 1px solid rgba(255, 255, 255, 0.1); 
+        position: relative;
+        z-index: 5; /* 배경 눈보다는 위 */
+    }
+
+    /* 3. ★ 핵심: UI 레이어 (트리보다 무조건 위로) */
+    .ui-top-layer {
+        position: relative;
+        z-index: 30; /* 트리(20)보다 높은 우선순위 */
+    }
+
+    /* 4. 트리 배치 영역 (성장판 공간 확보) */
+    .tree-zone {
+        height: 300px; /* 트리가 커져도 버틸 수 있는 충분한 높이 */
+        display: flex;
+        align-items: flex-end; /* 트리를 바닥에 고정 */
+        justify-content: center;
+        margin: 10px 0 30px 0; /* 위아래 여백을 주어 글씨와 거리 유지 */
+        position: relative;
+        z-index: 20; /* UI 레이어보다는 아래 */
+        overflow: visible; /* 트리가 커져도 잘리지 않게 함 */
+    }
+
+    /* 5. 트리 이미지 스타일 */
+    #tree-image { 
+        transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4)); 
+        width: 150px; /* 적당한 초기 크기 */
+        max-height: 250px;
+        object-fit: contain;
+        transform-origin: bottom center; /* 바닥을 기준으로 커짐 */
+    }
+
+    /* 6. 배경 눈 내리는 효과 */
+    .snow { 
+        position: absolute; 
+        background: white; 
+        border-radius: 50%; 
+        pointer-events: none; 
+        z-index: 1; /* 가장 뒤에 배치 */
+    }
+    @keyframes fall { to { transform: translateY(100vh); } }
+
+    /* 7. 유틸리티 클래스 */
+    .hidden { display: none !important; }
+    
+    /* 버튼 클릭 시 눌림 효과 */
+    .active-scale:active {
+        transform: scale(0.95);
+    }
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center relative">
     <div id="snow-field" class="absolute inset-0 pointer-events-none"></div>
