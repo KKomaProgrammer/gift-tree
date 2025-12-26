@@ -10,19 +10,16 @@
         body { background: #0f172a; font-family: 'Noto Sans KR', sans-serif; color: white; margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); position: relative; z-index: 10; }
         .ui-top-layer { position: relative; z-index: 40; }
-        
-        /* 트리 위치 하단 조정 */
-        .tree-zone { height: 360px; display: flex; align-items: flex-end; justify-content: center; margin-top: 80px; margin-bottom: 30px; position: relative; z-index: 20; overflow: visible; }
-        #tree-image { transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); filter: drop-shadow(0 0 40px rgba(255, 255, 255, 0.3)); width: 160px; max-height: 260px; object-fit: contain; transform-origin: bottom center; }
-        
-        .uid-badge { background: rgba(0,0,0,0.6); font-family: monospace; font-size: 10px; color: #4ade80; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(74, 222, 128, 0.2); }
-        .snow { position: absolute; background: white; border-radius: 50%; pointer-events: none; z-index: 1; }
+        .tree-zone { height: 320px; display: flex; align-items: flex-end; justify-content: center; margin-top: 60px; margin-bottom: 30px; position: relative; z-index: 20; }
+        #tree-image { transition: transform 0.2s; width: 150px; transform-origin: bottom center; filter: drop-shadow(0 0 30px rgba(255,255,255,0.3)); }
+        .uid-badge { background: rgba(0,0,0,0.5); font-size: 10px; color: #4ade80; padding: 4px 12px; border-radius: 20px; border: 1px solid rgba(74,222,128,0.2); }
+        .snow { position: absolute; background: white; border-radius: 50%; pointer-events: none; }
         @keyframes fall { to { transform: translateY(100vh); } }
         .hidden { display: none !important; }
     </style>
 </head>
 <body class="relative">
-    <div id="snow-field" class="absolute inset-0 pointer-events-none"></div>
+    <div id="snow-field" class="absolute inset-0"></div>
 
     <main class="glass-card p-10 rounded-[3rem] w-full max-w-md text-center mx-4">
         <div id="session-info" class="hidden flex justify-center mb-4 ui-top-layer">
@@ -30,23 +27,20 @@
         </div>
 
         <header class="ui-top-layer mb-2">
-            <h1 class="text-3xl font-extrabold text-white tracking-tight">🎄 메리 트리 키우기</h1>
-            <p id="sub-title" class="text-white/40 text-[11px] mt-1 italic">정성을 다해 트리를 키워보세요</p>
+            <h1 class="text-3xl font-extrabold tracking-tight">🎄 메리 트리 키우기</h1>
+            <p id="sub-title" class="text-white/40 text-[11px] mt-1 italic">따뜻한 정성으로 트리를 키워보세요</p>
         </header>
 
         <section id="login-section" class="py-10 ui-top-layer">
-            <p id="login-msg" class="text-xs text-white/60 mb-6">기여를 위해 Google 로그인이 필요합니다.</p>
+            <p id="login-msg" class="text-xs text-white/60 mb-6">기여를 위해 로그인이 필요합니다.</p>
             <button id="google-login-btn" class="bg-white text-gray-800 font-bold py-4 px-8 rounded-2xl flex items-center justify-center w-full shadow-2xl active:scale-95 transition-all">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6 mr-4" alt="Google">
-                Google 계정으로 로그인
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-6 h-6 mr-4" alt="G">
+                Google 로그인
             </button>
         </section>
 
         <section id="game-section" class="hidden">
-            <div class="tree-zone">
-                <img id="tree-image" src="https://img.bloupla.net/rxNz2hSf?raw=1" alt="Tree">
-            </div>
-
+            <div class="tree-zone"><img id="tree-image" src="https://img.bloupla.net/rxNz2hSf?raw=1" alt="Tree"></div>
             <div class="space-y-6 ui-top-layer">
                 <div>
                     <div class="flex justify-between text-[11px] mb-2 px-1">
@@ -54,20 +48,41 @@
                         <span id="exp-display">0 / 10 XP</span>
                     </div>
                     <div class="h-2 bg-black/40 rounded-full overflow-hidden">
-                        <div id="progress-bar" class="h-full bg-gradient-to-r from-green-400 to-emerald-500 transition-all duration-300" style="width: 0%"></div>
+                        <div id="progress-bar" class="h-full bg-green-500 transition-all duration-300" style="width: 0%"></div>
                     </div>
                 </div>
-
                 <div id="owner-controls" class="space-y-3">
-                    <button id="grow-btn" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-all select-none">
-                        꾹 눌러서 가속
-                    </button>
-                    <button id="daily-btn" class="w-full bg-yellow-500 text-yellow-900 font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-all">
-                        오늘의 사랑 주기 (+20 XP)
-                    </button>
-                    <button id="share-btn" class="text-white/40 text-[11px] underline w-full text-center">내 트리 주소 복사</button>
+                    <button id="grow-btn" class="hidden w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg active:scale-95 transition-all select-none">꾹 눌러서 가속</button>
+                    <button id="daily-btn" class="w-full bg-yellow-500 text-yellow-900 font-bold py-4 rounded-xl shadow-lg active:scale-95">오늘의 사랑 주기 (+20 XP)</button>
+                    <button id="share-btn" class="text-white/40 text-[11px] underline w-full">내 트리 링크 복사</button>
                 </div>
+                <div id="friend-controls" class="hidden space-y-3 pt-4 border-t border-white/10">
+                    <input type="text" id="cheer-message" placeholder="응원 메시지" class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center text-sm">
+                    <button id="cheer-btn" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl shadow-lg active:scale-95">오늘의 응원 보내기</button>
+                </div>
+            </div>
+        </section>
+    </main>
 
+    <script src="main.js"></script>
+    <script>
+        const field = document.getElementById('snow-field');
+        setInterval(() => {
+            const s = document.createElement('div');
+            s.className = 'snow';
+            const size = Math.random() * 3 + 2 + 'px';
+            s.style.width = size; s.style.height = size;
+            s.style.left = Math.random() * 100 + 'vw';
+            s.style.top = '-10px';
+            s.style.opacity = Math.random();
+            const d = Math.random() * 5 + 10 + 's';
+            s.style.animation = `fall ${d} linear forwards`;
+            field.appendChild(s);
+            setTimeout(() => s.remove(), parseFloat(d) * 1000);
+        }, 300);
+    </script>
+</body>
+</html>
                 <div id="friend-controls" class="hidden space-y-3 pt-4 border-t border-white/10">
                     <p class="text-[11px] text-white/60 mb-2 font-bold">친구의 트리에 응원을 남겨주세요</p>
                     <input type="text" id="cheer-message" placeholder="응원 메시지" class="w-full bg-white/5 text-white border border-white/10 px-4 py-3 rounded-xl focus:outline-none text-center text-sm">
